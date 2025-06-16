@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from django.http import HttpResponse
 from django.contrib import messages
-from django.db import IntegrityError
+from django.contrib.auth import login, logout, authenticate
 
 
 def home(request):
     return render(request, 'index.html')
+
+def dashboard(request):
+    return render(request, 'dashboard.html')
     
 def signup(request):
     if request.method == 'POST':
@@ -15,9 +16,9 @@ def signup(request):
         if form.is_valid():
             try:
                 user = form.save()
-                messages.succes(request, 'User created successfully!')
-            except IntegrityError:
-                form.add_error('username', 'This username already exists')
+                login(request, user)
+                messages.success(request, 'User created successfully!')
+                return redirect('dashboard')
             except Exception as e:
                 messages.error(request, f"An error has ocurred: {e}")
         else:
@@ -28,3 +29,7 @@ def signup(request):
     return render(request, 'signup.html', {
         'form': form
     })
+    
+def signout(request):
+    logout(request)
+    return redirect('home')

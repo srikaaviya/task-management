@@ -1,5 +1,18 @@
-<form action="/signup/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button>Sign up</button>
-</form>
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        {% if messages %}
+            {% for message in messages %}
+                <div>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif%}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="submitBtn" type="submit">Sign up</button>
+    </form>
+{% endblock %}
