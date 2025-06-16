@@ -10,11 +10,13 @@
             {% endfor %}
         {% endif%}
     </ul>
-    <div class="signup-card">
-        <form method="post">
-            {% csrf_token %}
-            {{ form }}
-            <button class="submitBtn" type="submit">Sign up</button>
-        </form>
+    <div class="card-container">
+        <div class="signup-card">
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <button class="submitBtn" type="submit">Sign up</button>
+            </form>
+        </div>
     </div>
 {% endblock %}
