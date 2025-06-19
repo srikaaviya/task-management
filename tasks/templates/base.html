@@ -16,7 +16,7 @@
                         <a href="{% url 'dashboard' %}">Dashboard</a>
                     </li> 
                     <li>
-                        <a href="">Tasks</a>
+                        <a href="{% url 'tasks' %}">Tasks</a>
                     </li>
                     <li>
                         <a href="{% url 'signout' %}">Logout</a>
@@ -34,5 +34,11 @@
     </header>
     {% block content %}
     {% endblock %}
+
+    <script>
+        document.getElementById('openModalBtn')?.addEventListener('click', function() {
+            document.getElementById('createTaskModal').showModal();
+        });
+    </script>
 </body>
 </html>

@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from .models import Task
+from .forms import CreateTaskForm
 
 
 def home(request):
@@ -50,5 +53,34 @@ def signin(request):
 def signout(request):
     logout(request)
     return redirect('home')
+
+@login_required
+def tasks(request):
+    tasks = Task.objects.filter(user=request.user)
+    form = CreateTaskForm()
+    return render(request, 'tasks.html', {
+        'tasks': tasks,
+        'form': form
+    })
+    
+@login_required
+def create_task(request):
+    if request.method == "POST":
+        form = CreateTaskForm(data=request.POST)
+        if form.is_valid():
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect('tasks')
+        else:
+            messages.error(request, 'Please, correct errors in the form')
+    else:
+        form = CreateTaskForm()
+    
+    return render(request, 'tasks.html', {
+        'form': form,
+        'tasks': Task.objects.filter(user=request.user)
+    })
+            
 
 
