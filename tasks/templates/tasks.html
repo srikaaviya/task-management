@@ -1,23 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Tus tareas</h2>
+    <h2>Your tasks</h2>
+    <button id="openModalBtn">Create New Task</button>
     <ul>
         {% for task in tasks %}
-            <li>{{ task.title }}</li>
+            <li><a href="{% url 'task_details' task.id %}">{{ task.title }}</a></li>
         {% empty %}
-            <li>No tienes tareas.</li>
+            <li>No tasks.</li>
         {% endfor %}
     </ul>
-
-    <button id="openModalBtn">Crear tarea</button>
-
     <dialog id="createTaskModal">
         <form method="post" action="{% url 'create_task' %}">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Guardar</button>
-            <button type="button" onclick="document.getElementById('createTaskModal').close()">Cancelar</button>
+            <button type="submit">Save</button>
+            <button type="button" onclick="document.getElementById('createTaskModal').close()">Cancel</button>
         </form>
     </dialog>
 {% endblock %}

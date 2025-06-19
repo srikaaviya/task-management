@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Task
-from .forms import CreateTaskForm
+from .forms import TaskForm
 
 
 def home(request):
@@ -57,7 +57,7 @@ def signout(request):
 @login_required
 def tasks(request):
     tasks = Task.objects.filter(user=request.user)
-    form = CreateTaskForm()
+    form = TaskForm()
     return render(request, 'tasks.html', {
         'tasks': tasks,
         'form': form
@@ -66,7 +66,7 @@ def tasks(request):
 @login_required
 def create_task(request):
     if request.method == "POST":
-        form = CreateTaskForm(data=request.POST)
+        form = TaskForm(data=request.POST)
         if form.is_valid():
             new_task = form.save(commit=False)
             new_task.user = request.user
@@ -75,12 +75,26 @@ def create_task(request):
         else:
             messages.error(request, 'Please, correct errors in the form')
     else:
-        form = CreateTaskForm()
+        form = TaskForm()
     
     return render(request, 'tasks.html', {
         'form': form,
         'tasks': Task.objects.filter(user=request.user)
     })
+    
+@login_required
+def task_details(request, id):
+    if request.method == "POST":
+        task = get_object_or_404(Task, pk=id, user=request.user)
+        form = TaskForm(request.POST, instance=task)
+        form.save()
+        return redirect('tasks')
+    else:
+        task = get_object_or_404(Task, pk=id, user=request.user)
+        form = TaskForm(instance=task)
+        return render(request, 'task_details.html', {
+            'form': form
+        })
             
 
 
