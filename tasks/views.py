@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from .models import Task
 from .forms import TaskForm
 
@@ -84,12 +83,7 @@ def create_task(request):
     
 @login_required
 def task_details(request, id):
-    if request.method == "POST":
-        task = get_object_or_404(Task, pk=id, user=request.user)
-        form = TaskForm(request.POST, instance=task)
-        form.save()
-        return redirect('tasks')
-    else:
+    if request.method == "GET":
         task = get_object_or_404(Task, pk=id, user=request.user)
         form = TaskForm(instance=task)
         return render(request, 'task_details.html', {
@@ -103,7 +97,6 @@ def update_task(request, id):
         task = get_object_or_404(Task, pk=id, user=request.user)
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
-            task.updated_at = timezone.now()
             form.save()
             return redirect('tasks')
     else:
