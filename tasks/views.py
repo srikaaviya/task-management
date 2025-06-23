@@ -11,6 +11,22 @@ def home(request):
     return render(request, 'index.html')
 
 def dashboard(request):
+    if request.user.is_authenticated:
+        user_tasks = Task.objects.filter(user=request.user)
+        total_tasks = user_tasks.count()
+        pending_tasks = user_tasks.filter(status='pending').count()
+        in_progress_tasks = user_tasks.filter(status='in_progress').count()
+        completed_tasks = user_tasks.filter(status='completed').count()
+        recent_tasks = user_tasks.order_by('-created_at')[:5]
+        
+        return render(request, 'dashboard.html', {
+            'total_tasks': total_tasks,
+            'pending_tasks': pending_tasks,
+            'in_progress_tasks': in_progress_tasks,
+            'completed_tasks': completed_tasks,
+            'recent_tasks': recent_tasks,
+        })
+        
     return render(request, 'dashboard.html')
     
 def signup(request):

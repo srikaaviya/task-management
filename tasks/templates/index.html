@@ -1,5 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Home</h1>
+    <main class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to Task Management</h1>
+            <p>Organize your tasks efficiently and boost your productivity</p>
+            {% if not user.is_authenticated %}
+                <div class="cta-buttons">
+                    <a href="{% url 'signup' %}" class="btn btn-primary">Get Started</a>
+                    <a href="{% url 'signin' %}" class="btn btn-secondary">Sign In</a>
+                </div>
+            {% else %}
+                <div class="cta-buttons">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+                    <a href="{% url 'tasks' %}" class="btn btn-secondary">View Tasks</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Task Management App. Built with Django.</p>
+    </footer>
 {% endblock %}

@@ -1,21 +1,73 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Your tasks</h2>
-    <button id="openModalBtn">Create New Task</button>
-    <ul>
-        {% for task in tasks %}
-            <li><a href="{% url 'task_details' task.id %}">{{ task.title }}</a></li>
-        {% empty %}
-            <li>No tasks.</li>
-        {% endfor %}
-    </ul>
-    <dialog id="createTaskModal">
-        <form method="post" action="{% url 'create_task' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save</button>
-            <button type="button" onclick="document.getElementById('createTaskModal').close()">Cancel</button>
-        </form>
+    <div class="tasks-container">
+        <div class="tasks-header">
+            <h1>Your Tasks</h1>
+            <button id="openModalBtn" class="btn btn-primary">+ Create New Task</button>
+        </div>
+        
+        <div class="tasks-grid">
+            {% for task in tasks %}
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <h3>{{ task.title }}</h3>
+                        <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                    </div>
+                    <div class="task-card-body">
+                        {% if task.description %}
+                            <p class="task-description">{{ task.description|truncatewords:15 }}</p>
+                        {% endif %}
+                        <div class="task-meta">
+                            <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                            <span class="task-date">{{ task.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="task-card-footer">
+                        <a href="{% url 'task_details' task.id %}" class="btn btn-small">View Details</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-tasks-card">
+                    <h3>No tasks yet!</h3>
+                    <p>Create your first task to get started</p>
+                    <button onclick="document.getElementById('openModalBtn').click()" class="btn btn-primary">Create Task</button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <dialog id="createTaskModal" class="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Task</h3>
+                <button type="button" class="close-btn" onclick="document.getElementById('createTaskModal').close()">×</button>
+            </div>
+            <form method="post" action="{% url 'create_task' %}" class="modal-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.priority.id_for_label }}">Priority</label>
+                        {{ form.priority }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}">Status</label>
+                        {{ form.status }}
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('createTaskModal').close()">Cancel</button>
+                </div>
+            </form>
+        </div>
     </dialog>
 {% endblock %}

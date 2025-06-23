@@ -1,5 +1,54 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Dashboard</h1>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Welcome back, {{ user.username }}!</h1>
+            <p>Here's what's happening with your tasks</p>
+        </div>
+        
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_tasks }}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ pending_tasks }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ in_progress_tasks }}</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ completed_tasks }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-actions">
+            <a href="{% url 'tasks' %}" class="btn btn-primary">View All Tasks</a>
+        </div>
+        
+        <div class="recent-tasks">
+            <h3>Recent Tasks</h3>
+            {% if recent_tasks %}
+                <div class="task-list">
+                    {% for task in recent_tasks %}
+                        <div class="task-item">
+                            <div class="task-info">
+                                <h4>{{ task.title }}</h4>
+                                <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                            </div>
+                            <div class="task-priority priority-{{ task.priority }}">
+                                {{ task.get_priority_display }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-tasks">No tasks yet. <a href="{% url 'tasks' %}">Create your first task!</a></p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

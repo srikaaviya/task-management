@@ -1,13 +1,77 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <form method="post" action="{% url 'update_task' task.id %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update</button>
-    </form>
-    <form method="post" action="{% url 'delete_task' task.id %}">
-        {% csrf_token %}
-        <button type="submit">Delete</button>
-    </form>
+    <div class="task-details-container">
+        <div class="task-details-header">
+            <a href="{% url 'tasks' %}" class="back-btn">← Back to Tasks</a>
+            <h1>Task Details</h1>
+        </div>
+        
+        <div class="task-details-card">
+            <div class="task-info-section">
+                <div class="task-title-section">
+                    <h2>{{ task.title }}</h2>
+                    <div class="task-badges">
+                        <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                        <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                    </div>
+                </div>
+                
+                {% if task.description %}
+                    <div class="task-description-section">
+                        <h3>Description</h3>
+                        <p>{{ task.description }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="task-meta-section">
+                    <div class="meta-item">
+                        <strong>Created:</strong> {{ task.created_at|date:"F d, Y at g:i A" }}
+                    </div>
+                    <div class="meta-item">
+                        <strong>Last Updated:</strong> {{ task.updated_at|date:"F d, Y at g:i A" }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="task-form-section">
+                <h3>Update Task</h3>
+                <form method="post" action="{% url 'update_task' task.id %}" class="update-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">Title</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}">Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.priority.id_for_label }}">Priority</label>
+                            {{ form.priority }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.status.id_for_label }}">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Task</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteTask()">Delete Task</button>
+                    </div>
+                    </form>
+                    <form method="post" action="{% url 'delete_task' task.id %}" id="deleteForm" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <script>
+                    function deleteTask() {
+                        if (confirm('Are you sure you want to delete this task?')) {
+                            document.getElementById('deleteForm').submit();
+                        }
+                    }
+                    </script>
+            </div>
+        </div>
+    </div>
 {% endblock %}

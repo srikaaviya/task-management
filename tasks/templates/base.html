@@ -8,9 +8,12 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    <header class="header-section">
-        <nav class="nav-bar">
-            <ul>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <a href="{% url 'home' %}">TaskApp</a>
+            </div>
+            <ul class="nav-links">
                 {% if user.is_authenticated %}
                     <li>
                         <a href="{% url 'dashboard' %}">Dashboard</a>
