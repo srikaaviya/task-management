@@ -6,7 +6,24 @@
             <h1>Your Tasks</h1>
             <button id="openModalBtn" class="btn btn-primary">+ Create New Task</button>
         </div>
-        
+        <div class="search-container">
+            <form method="get" action="{% url 'filter_tasks' %}">
+                <input name="title" type="text" placeholder="Search by description" autocomplete="off" value="{{ title }}">
+                <button id="searchBtn">🔍</button>
+                <select name="status" id="status">
+                    <option value="default" {% if status == "default" or not status %}selected{% endif %}>Select a status</option>
+                    <option value="completed" {% if status == "completed" %}selected{% endif %}>Completed</option>
+                    <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+                    <option value="in_progress" {% if status == "in_progress" %}selected{% endif %}>In Progress</option>
+                </select>
+                <select name="priority" id="priority">
+                    <option value="default" {% if priority == "default" or not priority %}selected{% endif %}>Select a priority</option>
+                    <option value="high" {% if priority == "high" %}selected{% endif %}>High</option>
+                    <option value="medium" {% if priority == "medium" %}selected{% endif %}>Medium</option>
+                    <option value="low" {% if priority == "low" %}selected{% endif %}>Low</option>
+                </select>
+            </form>
+        </div>
         <div class="tasks-grid">
             {% for task in tasks %}
                 <div class="task-card">

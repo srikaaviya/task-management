@@ -129,6 +129,32 @@ def delete_task(request, id):
     if request.method == 'POST':
         task.delete()
         return redirect('tasks')
+    
+@login_required
+def filter_tasks(request):
+    if request.user.is_authenticated:
+        title = request.GET.get('title')
+        status = request.GET.get('status')
+        priority = request.GET.get('priority')
+        tasks = Task.objects.filter(user=request.user)
+        if request.method == 'GET':
+            if title:
+                tasks = tasks.filter(title__icontains=title)
+                
+            if status != 'default' and status:
+                tasks = tasks.filter(status=status)
+                
+            if priority != 'default' and priority:
+                tasks = tasks.filter(priority=priority)
+            
+            return render(request, 'tasks.html', {
+                'tasks': tasks,
+                'status': status,
+                'priority': priority,
+                'title': title,
+                'form': TaskForm(),
+            })
+                        
             
 
 
