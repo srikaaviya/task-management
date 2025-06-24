@@ -3,9 +3,14 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from django.db.models import ProtectedError
+from django.core.exceptions import ValidationError
+import logging
 from .models import Task
 from .forms import TaskForm
 
+logger = logging.getLogger(__name__)
 
 def home(request):
     return render(request, 'index.html')
@@ -84,18 +89,34 @@ def create_task(request):
     if request.method == "POST":
         form = TaskForm(data=request.POST)
         if form.is_valid():
-            new_task = form.save(commit=False)
-            new_task.user = request.user
-            new_task.save()
-            return redirect('tasks')
+            try:
+                new_task = form.save(commit=False)
+                new_task.user = request.user
+                new_task.save()
+                return redirect('tasks')
+            except IntegrityError:
+                messages.error(request, 'An error has ocurred creating the task. Verify the info')
+                return redirect('tasks')
+            except ValidationError as e:
+                messages.error(request, f'Invalid data: {e}')
+                return redirect('tasks')
+            except Exception as e:
+                messages.error(request, 'Unexpected error creating the task')
+                logger.error(f'Error in create_task: {str(e)}')
+                return redirect('tasks')
         else:
             messages.error(request, 'Please, correct errors in the form')
+            tasks = Task.objects.filter(user=request.user)
+            return render(request, 'tasks.html', {
+                'tasks': tasks,
+                'form': form,
+            })
     else:
         form = TaskForm()
-    
-    return render(request, 'tasks.html', {
-        'form': form,
-    })
+        return render(request, 'tasks.html', {
+            'form': form,
+        })
+        
     
 @login_required
 def task_details(request, id):
@@ -113,8 +134,19 @@ def update_task(request, id):
         task = get_object_or_404(Task, pk=id, user=request.user)
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
-            form.save()
-            return redirect('tasks')
+            try:
+                form.save()
+                return redirect('tasks')
+            except IntegrityError:
+                messages.error(request, 'An error has ocurred creating the task. Verify the info')
+                return redirect('tasks')
+            except ValidationError as e:
+                messages.error(request, f'Invalid data: {e}')
+                return redirect('tasks')
+            except Exception as e:
+                messages.error(request, 'Unexpected error creating the task')
+                logger.error(f'Error in create_task: {str(e)}')
+                return redirect('tasks')
     else:
         task = get_object_or_404(Task, pk=id, user=request.user)
         form = TaskForm(instance=task)
@@ -127,9 +159,20 @@ def update_task(request, id):
 def delete_task(request, id):
     task = get_object_or_404(Task, pk=id, user=request.user)
     if request.method == 'POST':
-        task.delete()
-        return redirect('tasks')
-    
+        try:
+            task.delete()
+            return redirect('tasks')
+        except IntegrityError:
+            messages.error(request, 'An error has ocurred creating the task. Verify the info')
+            return redirect('tasks_details')
+        except ProtectedError:
+            messages.error(request, 'Error deleting task')
+            return redirect('tasks_details')
+        except Exception as e:
+            messages.error(request, 'Unexpected error creating the task')
+            logger.error(f'Error in create_task: {str(e)}')
+            return redirect('tasks_details')
+        
 @login_required
 def filter_tasks(request):
     if request.user.is_authenticated:

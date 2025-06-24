@@ -60,7 +60,7 @@
                 <h3>Create New Task</h3>
                 <button type="button" class="close-btn" onclick="document.getElementById('createTaskModal').close()">×</button>
             </div>
-            <form method="post" action="{% url 'create_task' %}" class="modal-form">
+            <form method="post" action="{% url 'create_task' %}" class="modal-form" novalidate>
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="{{ form.title.id_for_label }}">Title</label>
