@@ -138,14 +138,14 @@ def update_task(request, id):
                 form.save()
                 return redirect('tasks')
             except IntegrityError:
-                messages.error(request, 'An error has ocurred creating the task. Verify the info')
+                messages.error(request, 'An error has ocurred updating the task. Verify the info')
                 return redirect('tasks')
             except ValidationError as e:
                 messages.error(request, f'Invalid data: {e}')
                 return redirect('tasks')
             except Exception as e:
-                messages.error(request, 'Unexpected error creating the task')
-                logger.error(f'Error in create_task: {str(e)}')
+                messages.error(request, 'Unexpected error updating the task')
+                logger.error(f'Error in update_task: {str(e)}')
                 return redirect('tasks')
     else:
         task = get_object_or_404(Task, pk=id, user=request.user)
@@ -164,14 +164,14 @@ def delete_task(request, id):
             return redirect('tasks')
         except IntegrityError:
             messages.error(request, 'An error has ocurred creating the task. Verify the info')
-            return redirect('tasks_details')
+            return redirect('tasks_details', id=id)
         except ProtectedError:
             messages.error(request, 'Error deleting task')
-            return redirect('tasks_details')
+            return redirect('tasks_details', id=id)
         except Exception as e:
             messages.error(request, 'Unexpected error creating the task')
-            logger.error(f'Error in create_task: {str(e)}')
-            return redirect('tasks_details')
+            logger.error(f'Error in delete_task: {str(e)}')
+            return redirect('tasks_details', id=id)
         
 @login_required
 def filter_tasks(request):
