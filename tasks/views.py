@@ -89,6 +89,12 @@ def create_task(request):
     if request.method == "POST":
         form = TaskForm(data=request.POST)
         if form.is_valid():
+            if not form.cleaned_data.get('title') or not form.cleaned_data['title'].strip():
+                messages.error(request, 'Title is required and cannot be empty')
+                tasks = Task.objects.filter(user=request.user)
+                return render(request, 'tasks.html', {
+                    'form': form,
+                })
             try:
                 new_task = form.save(commit=False)
                 new_task.user = request.user
@@ -121,7 +127,11 @@ def create_task(request):
 @login_required
 def task_details(request, id):
     if request.method == "GET":
-        task = get_object_or_404(Task, pk=id, user=request.user)
+        try:
+            task = Task.objects.get(pk=id, user=request.user)
+        except Task.DoesNotExist:
+            messages.error(request, 'Task not found or you do not have permission to access it')
+            return redirect('tasks')
         form = TaskForm(instance=task)
         return render(request, 'task_details.html', {
             'form': form,
@@ -131,9 +141,19 @@ def task_details(request, id):
 @login_required
 def update_task(request, id):
     if request.method == 'POST':
-        task = get_object_or_404(Task, pk=id, user=request.user)
+        try:
+            task = Task.objects.get(pk=id, user=request.user)
+        except Task.DoesNotExist:
+            messages.error(request, 'Task not found or you do not have permission to access it')
+            return redirect('tasks')
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
+            if form.cleaned_data.get('title') or not form.cleaned_data['title'].strip():
+                messages.error(request, 'Title is required and cannot be empty')
+                return render(request, 'tasks.html', {
+                    'task': task,
+                    'form': form,
+                })
             try:
                 form.save()
                 return redirect('tasks')
@@ -148,7 +168,11 @@ def update_task(request, id):
                 logger.error(f'Error in update_task: {str(e)}')
                 return redirect('tasks')
     else:
-        task = get_object_or_404(Task, pk=id, user=request.user)
+        try:
+            task = Task.objects.get(pk=id, user=request.user)
+        except Task.DoesNotExist:
+            messages.error(request, 'Task not found or you do not have permission to access it')
+            return redirect('tasks')
         form = TaskForm(instance=task)
         return render(request, 'task_details.html', {
             'form': form,
@@ -157,7 +181,11 @@ def update_task(request, id):
         
 @login_required
 def delete_task(request, id):
-    task = get_object_or_404(Task, pk=id, user=request.user)
+    try:
+        task = Task.objects.get(pk=id, user=request.user)
+    except Task.DoesNotExist:
+            messages.error(request, 'Task not found or you do not have permission to access it')
+            return redirect('tasks')
     if request.method == 'POST':
         try:
             task.delete()
