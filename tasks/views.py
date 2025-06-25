@@ -147,26 +147,32 @@ def update_task(request, id):
             messages.error(request, 'Task not found or you do not have permission to access it')
             return redirect('tasks')
         form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            if form.cleaned_data.get('title') or not form.cleaned_data['title'].strip():
-                messages.error(request, 'Title is required and cannot be empty')
-                return render(request, 'tasks.html', {
-                    'task': task,
-                    'form': form,
-                })
-            try:
-                form.save()
-                return redirect('tasks')
-            except IntegrityError:
-                messages.error(request, 'An error has ocurred updating the task. Verify the info')
-                return redirect('tasks')
-            except ValidationError as e:
-                messages.error(request, f'Invalid data: {e}')
-                return redirect('tasks')
-            except Exception as e:
-                messages.error(request, 'Unexpected error updating the task')
-                logger.error(f'Error in update_task: {str(e)}')
-                return redirect('tasks')
+        
+        if not form.is_valid():
+            return render(request, 'task_details.html', {
+                'task': task,
+                'form': form,
+            })
+            
+        if not form.cleaned_data.get('title') or not form.cleaned_data['title'].strip():
+            messages.error(request, 'Title is required and cannot be empty')
+            return render(request, 'task_details.html', {
+                'task': task,
+                'form': form,
+            })
+        try:
+            form.save()
+            return redirect('tasks')
+        except IntegrityError:
+            messages.error(request, 'An error has ocurred updating the task. Verify the info')
+            return redirect('tasks')
+        except ValidationError as e:
+            messages.error(request, f'Invalid data: {e}')
+            return redirect('tasks')
+        except Exception as e:
+            messages.error(request, 'Unexpected error updating the task')
+            logger.error(f'Error in update_task: {str(e)}')
+            return redirect('tasks')
     else:
         try:
             task = Task.objects.get(pk=id, user=request.user)
@@ -192,14 +198,14 @@ def delete_task(request, id):
             return redirect('tasks')
         except IntegrityError:
             messages.error(request, 'An error has ocurred creating the task. Verify the info')
-            return redirect('tasks_details', id=id)
+            return redirect('task_details', id=id)
         except ProtectedError:
             messages.error(request, 'Error deleting task')
-            return redirect('tasks_details', id=id)
+            return redirect('task_details', id=id)
         except Exception as e:
             messages.error(request, 'Unexpected error creating the task')
             logger.error(f'Error in delete_task: {str(e)}')
-            return redirect('tasks_details', id=id)
+            return redirect('task_details', id=id)
         
 @login_required
 def filter_tasks(request):
