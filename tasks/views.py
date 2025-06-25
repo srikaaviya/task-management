@@ -82,17 +82,34 @@ def signout(request):
 
 @login_required
 def tasks(request):
-    # obtener parametro de ordenamiento
+    # Obtener todos los parámetros de la URL
+    title = request.GET.get('title', '')
+    status = request.GET.get('status', 'default')
+    priority = request.GET.get('priority', 'default')
     order_by = request.GET.get('order_by', '-created_at')
     
-    # validar opciones de ordenamiento
+    # Validar ordenamiento
     valid_orders = ['-created_at', 'created_at', 'priority', '-priority', 'title']
     if order_by not in valid_orders:
         order_by = '-created_at'
     
-    tasks_list = Task.objects.filter(user=request.user).order_by(order_by)
+    # Comenzar con todas las tareas del usuario
+    tasks_list = Task.objects.filter(user=request.user)
     
-    # paginacion: 6 tareas por pagina
+    # Aplicar filtros solo si tienen valores válidos
+    if title:
+        tasks_list = tasks_list.filter(title__icontains=title)
+        
+    if status != 'default' and status:
+        tasks_list = tasks_list.filter(status=status)
+        
+    if priority != 'default' and priority:
+        tasks_list = tasks_list.filter(priority=priority)
+    
+    # Aplicar ordenamiento
+    tasks_list = tasks_list.order_by(order_by)
+    
+    # Paginación (6 tareas por página)
     paginator = Paginator(tasks_list, 6)
     page_number = request.GET.get('page')
     tasks = paginator.get_page(page_number)
@@ -101,7 +118,10 @@ def tasks(request):
     return render(request, 'tasks.html', {
         'tasks': tasks,
         'form': form,
-        'current_order': order_by
+        'current_order': order_by,
+        'title': title,
+        'status': status,
+        'priority': priority,
     })
     
 @login_required
@@ -226,31 +246,7 @@ def delete_task(request, id):
             messages.error(request, 'Unexpected error creating the task')
             logger.error(f'Error in delete_task: {str(e)}')
             return redirect('task_details', id=id)
-        
-@login_required
-def filter_tasks(request):
-    if request.user.is_authenticated:
-        title = request.GET.get('title')
-        status = request.GET.get('status')
-        priority = request.GET.get('priority')
-        tasks = Task.objects.filter(user=request.user)
-        if request.method == 'GET':
-            if title:
-                tasks = tasks.filter(title__icontains=title)
-                
-            if status != 'default' and status:
-                tasks = tasks.filter(status=status)
-                
-            if priority != 'default' and priority:
-                tasks = tasks.filter(priority=priority)
-            
-            return render(request, 'tasks.html', {
-                'tasks': tasks,
-                'status': status,
-                'priority': priority,
-                'title': title,
-                'form': TaskForm(),
-            })
+
                         
             
 

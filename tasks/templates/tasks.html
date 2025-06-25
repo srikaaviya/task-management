@@ -7,8 +7,9 @@
             <button id="openModalBtn" class="btn btn-primary">+ Create New Task</button>
         </div>
         <div class="search-container">
-            <form method="get" action="{% url 'filter_tasks' %}">
-                <input name="title" type="text" placeholder="Search by description" autocomplete="off" value="{{ title }}">
+            <form method="get" action="{% url 'tasks' %}">
+                <input type="hidden" name="order_by" value="{{ current_order }}">
+                <input name="title" type="text" placeholder="Search by title" autocomplete="off" value="{{ title }}">
                 <button id="searchBtn">🔍</button>
                 <select name="status" id="status">
                     <option value="default" {% if status == "default" or not status %}selected{% endif %}>Select a status</option>
@@ -81,7 +82,7 @@
         <div class="pagination-container">
             <div class="pagination">
                 {% if tasks.has_previous %}
-                    <a href="?page={{ tasks.previous_page_number }}" class="btn btn-secondary">← Previous</a>
+                    <a href="?page={{ tasks.previous_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">← Previous</a>
                 {% endif %}
                 
                 <span class="page-info">
@@ -89,7 +90,7 @@
                 </span>
                 
                 {% if tasks.has_next %}
-                    <a href="?page={{ tasks.next_page_number }}" class="btn btn-secondary">Next →</a>
+                    <a href="?page={{ tasks.next_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">Next →</a>
                 {% endif %}
             </div>
         </div>
