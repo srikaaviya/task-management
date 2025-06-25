@@ -418,6 +418,11 @@ form input:focus, form textarea:focus, form select:focus {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    min-height: 80vh;
 }
 
 .dashboard-header {
@@ -428,12 +433,12 @@ form input:focus, form textarea:focus, form select:focus {
 .dashboard-header h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    color: white;
+    color: #333;
     font-weight: 700;
 }
 
 .dashboard-header p {
-    color: white;
+    color: #666;
     font-size: 1.1rem;
 }
 
@@ -484,12 +489,12 @@ form input:focus, form textarea:focus, form select:focus {
 }
 
 .recent-tasks {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.8);
     padding: 2rem;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .recent-tasks h3 {
@@ -499,24 +504,45 @@ form input:focus, form textarea:focus, form select:focus {
 }
 
 .task-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1rem;
 }
 
 .task-item {
     display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e1e1e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.task-item-header {
+    display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 10px;
-    border-left: 4px solid #667eea;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.task-item .task-status {
+    align-self: flex-start;
+    width: fit-content;
 }
 
 .task-info h4 {
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     color: #333;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .task-status {
