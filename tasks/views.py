@@ -90,7 +90,7 @@ def tasks(request):
     if order_by not in valid_orders:
         order_by = '-created_at'
     
-    tasks_list = Task.objects.filter(user=request.user).order_by('-created_at')
+    tasks_list = Task.objects.filter(user=request.user).order_by(order_by)
     
     # paginacion: 6 tareas por pagina
     paginator = Paginator(tasks_list, 6)
