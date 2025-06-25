@@ -36,13 +36,15 @@
                 {% if recent_tasks %}
                     <div class="task-list">
                         {% for task in recent_tasks %}
-                            <div class="task-item">
-                                <div class="task-item-header">
-                                    <h4>{{ task.title }}</h4>
-                                    <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                            <a href="{% url 'task_details' task.id %}">
+                                <div class="task-item">
+                                    <div class="task-item-header">
+                                        <h4>{{ task.title }}</h4>
+                                        <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                                    </div>
+                                    <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
                                 </div>
-                                <div class="task-status status-{{ task.status }}">{{ task.get_status_display }}</div>
-                            </div>
+                            </a>
                         {% endfor %}
                     </div>
                 {% else %}
