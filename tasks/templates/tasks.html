@@ -1,101 +1,106 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="tasks-container">
-        <div class="tasks-header">
-            <h1>Your Tasks</h1>
-            <button id="openModalBtn" class="btn btn-primary">+ Create New Task</button>
-        </div>
-        <div class="search-container">
-            <form method="get" action="{% url 'tasks' %}">
-                <input type="hidden" name="order_by" value="{{ current_order }}">
-                <input name="title" type="text" placeholder="Search by title" autocomplete="off" value="{{ title }}">
-                <button id="searchBtn">🔍</button>
-                <select name="status" id="status">
-                    <option value="default" {% if status == "default" or not status %}selected{% endif %}>Select a status</option>
-                    <option value="completed" {% if status == "completed" %}selected{% endif %}>Completed</option>
-                    <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
-                    <option value="in_progress" {% if status == "in_progress" %}selected{% endif %}>In Progress</option>
+    <div class="main-content">
+        <div class="tasks-container">
+            <div class="tasks-header">
+                <h1>Your Tasks</h1>
+                <button id="openModalBtn" class="btn btn-primary">+ Create New Task</button>
+            </div>
+            
+            <div class="search-container">
+                <form method="get" action="{% url 'tasks' %}">
+                    <input type="hidden" name="order_by" value="{{ current_order }}">
+                    <input name="title" type="text" placeholder="Search by title" autocomplete="off" value="{{ title }}">
+                    <select name="status" id="status">
+                        <option value="default" {% if status == "default" or not status %}selected{% endif %}>Select a status</option>
+                        <option value="completed" {% if status == "completed" %}selected{% endif %}>Completed</option>
+                        <option value="pending" {% if status == "pending" %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if status == "in_progress" %}selected{% endif %}>In Progress</option>
+                    </select>
+                    <select name="priority" id="priority">
+                        <option value="default" {% if priority == "default" or not priority %}selected{% endif %}>Select a priority</option>
+                        <option value="high" {% if priority == "high" %}selected{% endif %}>High</option>
+                        <option value="medium" {% if priority == "medium" %}selected{% endif %}>Medium</option>
+                        <option value="low" {% if priority == "low" %}selected{% endif %}>Low</option>
+                    </select>
+                    <button id="searchBtn">🔍</button>
+                </form>
+            </div>
+
+            <div class="sort-container">
+                <label for="sort-select">Sort by:</label>
+                <select id="sort-select" onchange="changeSorting()">
+                    <option value="-created_at" {% if current_order == "-created_at" %}selected{% endif %}>Newest first</option>
+                    <option value="created_at" {% if current_order == "created_at" %}selected{% endif %}>Oldest first</option>
+                    <option value="priority" {% if current_order == "priority" %}selected{% endif %}>Priority (Low to High)</option>
+                    <option value="-priority" {% if current_order == "-priority" %}selected{% endif %}>Priority (High to Low)</option>
+                    <option value="title" {% if current_order == "title" %}selected{% endif %}>Title A-Z</option>
                 </select>
-                <select name="priority" id="priority">
-                    <option value="default" {% if priority == "default" or not priority %}selected{% endif %}>Select a priority</option>
-                    <option value="high" {% if priority == "high" %}selected{% endif %}>High</option>
-                    <option value="medium" {% if priority == "medium" %}selected{% endif %}>Medium</option>
-                    <option value="low" {% if priority == "low" %}selected{% endif %}>Low</option>
-                </select>
-            </form>
-        </div>
+            </div>
 
-        <div class="sort-container">
-            <label for="sort-select">Sort by:</label>
-            <select id="sort-select" onchange="changeSorting()">
-                <option value="-created_at" {% if current_order == "-created_at" %}selected{% endif %}>Newest first</option>
-                <option value="created_at" {% if current_order == "created_at" %}selected{% endif %}>Oldest first</option>
-                <option value="priority" {% if current_order == "priority" %}selected{% endif %}>Priority (Low to High)</option>
-                <option value="-priority" {% if current_order == "-priority" %}selected{% endif %}>Priority (High to Low)</option>
-                <option value="title" {% if current_order == "title" %}selected{% endif %}>Title A-Z</option>
-            </select>
-        </div>
+            <script>
+                function changeSorting() {
+                    const select = document.getElementById('sort-select');
+                    const url = new URL(window.location);
+                    url.searchParams.set('order_by', select.value);
+                    url.searchParams.delete('page'); // Reset to first page
+                    window.location.href = url;
+                }
+            </script>
 
-        <script>
-        function changeSorting() {
-            const select = document.getElementById('sort-select');
-            const url = new URL(window.location);
-            url.searchParams.set('order_by', select.value);
-            url.searchParams.delete('page'); // Reset to first page
-            window.location.href = url;
-        }
-        </script>
-
-        <div class="tasks-grid">
-            {% for task in tasks %}
-                <div class="task-card">
-                    <div class="task-card-header">
-                        <h3>{{ task.title }}</h3>
-                        <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
-                    </div>
-                    <div class="task-card-body">
-                        {% if task.description %}
-                            <p class="task-description">{{ task.description|truncatewords:15 }}</p>
-                        {% endif %}
-                        <div class="task-meta">
-                            <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
-                            <span class="task-date">{{ task.created_at|date:"M d, Y" }}</span>
+            <div class="tasks-grid">
+                {% for task in tasks %}
+                    <div class="task-card">
+                        <div class="task-card-header">
+                            <h3>{{ task.title }}</h3>
+                            <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                        </div>
+                        <div class="task-card-body">
+                            {% if task.description %}
+                                <p class="task-description">{{ task.description|truncatewords:15 }}</p>
+                            {% endif %}
+                            <div class="task-meta">
+                                <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+                                <span class="task-date">{{ task.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        <div class="task-card-footer">
+                            <a href="{% url 'task_details' task.id %}" class="btn btn-small">View Details</a>
                         </div>
                     </div>
-                    <div class="task-card-footer">
-                        <a href="{% url 'task_details' task.id %}" class="btn btn-small">View Details</a>
+                {% empty %}
+                    <div class="no-tasks-card">
+                        <h3>No tasks yet!</h3>
+                        <p>Create your first task to get started</p>
+                        <button onclick="document.getElementById('openModalBtn').click()" class="btn btn-primary">Create Task</button>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación -->
+            {% if tasks.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination">
+                        {% if tasks.has_previous %}
+                            <a href="?page={{ tasks.previous_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">← Previous</a>
+                        {% endif %}
+                        
+                        <span class="page-info">
+                            Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}
+                        </span>
+                        
+                        {% if tasks.has_next %}
+                            <a href="?page={{ tasks.next_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">Next →</a>
+                        {% endif %}
                     </div>
                 </div>
-            {% empty %}
-                <div class="no-tasks-card">
-                    <h3>No tasks yet!</h3>
-                    <p>Create your first task to get started</p>
-                    <button onclick="document.getElementById('openModalBtn').click()" class="btn btn-primary">Create Task</button>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Paginación -->
-    {% if tasks.has_other_pages %}
-        <div class="pagination-container">
-            <div class="pagination">
-                {% if tasks.has_previous %}
-                    <a href="?page={{ tasks.previous_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">← Previous</a>
-                {% endif %}
-                
-                <span class="page-info">
-                    Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}
-                </span>
-                
-                {% if tasks.has_next %}
-                    <a href="?page={{ tasks.next_page_number }}&title={{ title }}&status={{ status }}&priority={{ priority }}&order_by={{ current_order }}" class="btn btn-secondary">Next →</a>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
+            {% endif %}
+            
+        </div> <!-- Cierra tasks-container -->
+    </div> <!-- Cierra main-content -->
     
+    <!-- Modal FUERA del main-content -->
     <dialog id="createTaskModal" class="task-modal">
         <div class="modal-content">
             <div class="modal-header">
