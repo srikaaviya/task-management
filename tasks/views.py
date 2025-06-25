@@ -4,8 +4,9 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Count, Q
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 import logging
 from .models import Task
 from .forms import TaskForm
@@ -17,18 +18,22 @@ def home(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        user_tasks = Task.objects.filter(user=request.user)
-        total_tasks = user_tasks.count()
-        pending_tasks = user_tasks.filter(status='pending').count()
-        in_progress_tasks = user_tasks.filter(status='in_progress').count()
-        completed_tasks = user_tasks.filter(status='completed').count()
-        recent_tasks = user_tasks.order_by('-created_at')[:5]
+
+        stats = Task.objects.filter(user=request.user).aggregate(
+            total=Count('id'),
+            pending=Count('id', filter=Q(status='pending')),
+            in_progress=Count('id', filter=Q(status='in_progress')),
+            completed=Count('id', filter=Q(status='completed'))
+        )
+        
+        # solo las tareas recientes necesarias
+        recent_tasks = Task.objects.filter(user=request.user).order_by('-created_at')[:5]
         
         return render(request, 'dashboard.html', {
-            'total_tasks': total_tasks,
-            'pending_tasks': pending_tasks,
-            'in_progress_tasks': in_progress_tasks,
-            'completed_tasks': completed_tasks,
+            'total_tasks': stats['total'],
+            'pending_tasks': stats['pending'],
+            'in_progress_tasks': stats['in_progress'],
+            'completed_tasks': stats['completed'],
             'recent_tasks': recent_tasks,
         })
         
@@ -77,11 +82,26 @@ def signout(request):
 
 @login_required
 def tasks(request):
-    tasks = Task.objects.filter(user=request.user)
+    # obtener parametro de ordenamiento
+    order_by = request.GET.get('order_by', '-created_at')
+    
+    # validar opciones de ordenamiento
+    valid_orders = ['-created_at', 'created_at', 'priority', '-priority', 'title']
+    if order_by not in valid_orders:
+        order_by = '-created_at'
+    
+    tasks_list = Task.objects.filter(user=request.user).order_by('-created_at')
+    
+    # paginacion: 6 tareas por pagina
+    paginator = Paginator(tasks_list, 6)
+    page_number = request.GET.get('page')
+    tasks = paginator.get_page(page_number)
+    
     form = TaskForm()
     return render(request, 'tasks.html', {
         'tasks': tasks,
-        'form': form
+        'form': form,
+        'current_order': order_by
     })
     
 @login_required

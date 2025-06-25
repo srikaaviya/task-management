@@ -1041,3 +1041,47 @@ form input:focus, form textarea:focus, form select:focus {
         min-width: 0;
     }
 }
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-info {
+    padding: 10px 15px;
+    background: white;
+    border-radius: 25px;
+    color: #666;
+    font-weight: 500;
+}
+
+.sort-container {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto 1rem auto;
+}
+
+.sort-container label {
+    font-weight: 600;
+    color: #333;
+}
+
+.sort-container select {
+    padding: 8px 12px;
+    border: 2px solid #e1e1e1;
+    border-radius: 6px;
+    background: #f8f9fa;
+}

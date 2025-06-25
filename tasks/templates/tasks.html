@@ -24,6 +24,28 @@
                 </select>
             </form>
         </div>
+
+        <div class="sort-container">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" onchange="changeSorting()">
+                <option value="-created_at" {% if current_order == "-created_at" %}selected{% endif %}>Newest first</option>
+                <option value="created_at" {% if current_order == "created_at" %}selected{% endif %}>Oldest first</option>
+                <option value="priority" {% if current_order == "priority" %}selected{% endif %}>Priority (Low to High)</option>
+                <option value="-priority" {% if current_order == "-priority" %}selected{% endif %}>Priority (High to Low)</option>
+                <option value="title" {% if current_order == "title" %}selected{% endif %}>Title A-Z</option>
+            </select>
+        </div>
+
+        <script>
+        function changeSorting() {
+            const select = document.getElementById('sort-select');
+            const url = new URL(window.location);
+            url.searchParams.set('order_by', select.value);
+            url.searchParams.delete('page'); // Reset to first page
+            window.location.href = url;
+        }
+        </script>
+
         <div class="tasks-grid">
             {% for task in tasks %}
                 <div class="task-card">
@@ -53,6 +75,25 @@
             {% endfor %}
         </div>
     </div>
+
+    <!-- Paginación -->
+    {% if tasks.has_other_pages %}
+        <div class="pagination-container">
+            <div class="pagination">
+                {% if tasks.has_previous %}
+                    <a href="?page={{ tasks.previous_page_number }}" class="btn btn-secondary">← Previous</a>
+                {% endif %}
+                
+                <span class="page-info">
+                    Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}
+                </span>
+                
+                {% if tasks.has_next %}
+                    <a href="?page={{ tasks.next_page_number }}" class="btn btn-secondary">Next →</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
     
     <dialog id="createTaskModal" class="task-modal">
         <div class="modal-content">
