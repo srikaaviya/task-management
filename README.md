@@ -1,5 +1,9 @@
 # Task Manager Django
 
+[![Python](https://img.shields.io/badge/python-v3.7+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-windows%20|%20macOS%20|%20linux-lightgrey.svg)](https://github.com/jscode-1302/task-tracker)
+
 A simple and elegant task management application built with Django.
 
 **Practice Project:** This is a learning project built to practice Django fundamentals including models, views, templates, forms, and deployment.
