@@ -1023,6 +1023,10 @@ form input:focus, form textarea:focus, form select:focus {
     color: #333;
 }
 
+.due-date {
+    font-weight: 600;
+}
+
 .task-form-section h3 {
     color: #333;
     margin-bottom: 1.5rem;
