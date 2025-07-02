@@ -761,7 +761,8 @@ form input:focus, form textarea:focus, form select:focus {
 }
 
 .task-card-footer {
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
 }
 
 .task-card-footer a {
@@ -777,6 +778,15 @@ form input:focus, form textarea:focus, form select:focus {
 .btn-small {
     padding: 8px 16px;
     font-size: 0.9rem;
+}
+
+.btn-success {
+    text-decoration: none;
+    color: inherit;
+}
+
+.btn-success:hover {
+    color: #2196F3;
 }
 
 .no-tasks-card {

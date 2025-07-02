@@ -246,6 +246,16 @@ def delete_task(request, id):
             messages.error(request, 'Unexpected error creating the task')
             logger.error(f'Error in delete_task: {str(e)}')
             return redirect('task_details', id=id)
+        
+@login_required
+def toggle_task_status(request, id):
+    task = get_object_or_404(Task, pk=id, user=request.user)
+    if task.status == 'completed':
+        task.status = 'pending'
+    else:
+        task.status = 'completed'
+    task.save()
+    return redirect('tasks')
 
                         
             

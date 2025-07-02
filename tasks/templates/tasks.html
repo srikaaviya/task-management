@@ -66,6 +66,9 @@
                             </div>
                         </div>
                         <div class="task-card-footer">
+                            <a href="{% url 'toggle_task_status' task.id %}" class="btn btn-small btn-success">
+                                {% if task.status == 'completed' %}✓ Completed{% else %}Mark Complete{% endif %}
+                            </a>
                             <a href="{% url 'task_details' task.id %}" class="btn btn-small">View Details</a>
                         </div>
                     </div>
