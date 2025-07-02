@@ -139,6 +139,7 @@ def create_task(request):
                 new_task = form.save(commit=False)
                 new_task.user = request.user
                 new_task.save()
+                messages.success(request, f'Task "{new_task.title}" created successfully!')
                 return redirect('tasks')
             except IntegrityError:
                 messages.error(request, 'An error has ocurred creating the task. Verify the info')
@@ -202,6 +203,7 @@ def update_task(request, id):
             })
         try:
             form.save()
+            messages.success(request, f'Task updated successfully!')
             return redirect('tasks')
         except IntegrityError:
             messages.error(request, 'An error has ocurred updating the task. Verify the info')
@@ -230,22 +232,27 @@ def delete_task(request, id):
     try:
         task = Task.objects.get(pk=id, user=request.user)
     except Task.DoesNotExist:
-            messages.error(request, 'Task not found or you do not have permission to access it')
-            return redirect('tasks')
+        messages.error(request, 'Task not found or you do not have permission to access it')
+        return redirect('tasks')
+    
     if request.method == 'POST':
         try:
+            task_title = task.title
             task.delete()
+            messages.success(request, f'Task "{task_title}" deleted successfully!')
             return redirect('tasks')
         except IntegrityError:
-            messages.error(request, 'An error has ocurred creating the task. Verify the info')
+            messages.error(request, 'An error has occurred deleting the task. Verify the info')  
             return redirect('task_details', id=id)
         except ProtectedError:
             messages.error(request, 'Error deleting task')
             return redirect('task_details', id=id)
         except Exception as e:
-            messages.error(request, 'Unexpected error creating the task')
+            messages.error(request, 'Unexpected error deleting the task')
             logger.error(f'Error in delete_task: {str(e)}')
             return redirect('task_details', id=id)
+    else:
+        return redirect('task_details', id=id)
         
 @login_required
 def toggle_task_status(request, id):

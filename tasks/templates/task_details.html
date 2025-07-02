@@ -79,7 +79,8 @@
                     </form>
                     <script>
                     function deleteTask() {
-                        if (confirm('Are you sure you want to delete this task?')) {
+                        const taskTitle = "{{ task.title|escapejs }}";
+                        if (confirm(`Are you sure you want to delete "${taskTitle}"?\n\nThis action cannot be undone.`)) {
                             document.getElementById('deleteForm').submit();
                         }
                     }

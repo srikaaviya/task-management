@@ -39,7 +39,7 @@
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
+            <li class="message message-{{ message.tags }}">{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
@@ -53,6 +53,17 @@
         });
         document.getElementById('openTaskDetailsModal')?.addEventListener('click', function() {
             document.getElementById('taskDetailsModal').showModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const messages = document.querySelector('.messages');
+                if (messages) {
+                    messages.style.transition = 'opacity 0.3s ease';
+                    messages.style.opacity = '0';
+                    setTimeout(() => messages.remove(), 300);
+                }
+            }, 3000);
         });
     </script>
 </body>
