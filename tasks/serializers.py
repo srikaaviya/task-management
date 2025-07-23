@@ -24,3 +24,27 @@ class TaskSerializer(serializers.ModelSerializer):
             'is_overdue'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+
+class TaskCreateUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer específico para crear y actualizar tareas.
+    Incluye solo campos editables para formularios.
+    """
+    priority = serializers.ChoiceField(choices=Task.Priority.choices, default=Task.Priority.LOW)
+    status = serializers.ChoiceField(choices=Task.Status.choices, default=Task.Status.PENDING)
+    
+    class Meta:
+        model = Task
+        fields = [
+            'title',
+            'description', 
+            'priority',
+            'status',
+            'due_date'
+        ]
+        
+    def validate_title(self, value):
+        """Validación personalizada para título"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("Title cannot be empty")
+        return value.strip()

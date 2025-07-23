@@ -13,4 +13,8 @@ urlpatterns = [
     path('tasks/<int:id>/update', views.update_task, name='update_task'),
     path('tasks/<int:id>/delete', views.delete_task, name='delete_task'),
     path('tasks/<int:id>/toggle', views.toggle_task_status, name='toggle_task_status'),
+
+    # NUEVAS RUTAS API
+    path('api/tasks/', views.TaskListAPIView.as_view(), name='task_list_api'),
+    path('api/tasks/<int:id>/', views.TaskDetailAPIView.as_view(), name='task_detail_api')
 ]

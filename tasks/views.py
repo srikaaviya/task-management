@@ -6,6 +6,10 @@ task CRUD operations, and dashboard functionality. It includes comprehensive
 error handling and user feedback through Django messages framework.
 """
 
+from rest_framework.permissions import IsAuthenticated
+from .serializers import TaskSerializer, TaskCreateUpdateSerializer
+from rest_framework import generics
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
@@ -424,7 +428,47 @@ def toggle_task_status(request, id):
     task.save()
     return redirect('tasks')
 
-                        
+# NUEVAS VISTAS API
+class TaskListAPIView(generics.ListCreateAPIView):
+    """
+    API para listar tareas (GET) y crear nuevas tareas (POST)
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = TaskSerializer
+
+    def get_queryset(self):
+        """Obtener lista de tareas de usuario"""
+        return Task.objects.filter(user=self.request.user).order_by('-created_at')
+    
+    def get_serializer_class(self):
+        """Usar diferente serializer para crear vs listar"""
+        if self.request.method == 'POST':
+            return TaskCreateUpdateSerializer
+        return TaskSerializer
+    
+    def perform_create(self, serializer):
+        """Asignar usuario al crear tarea"""
+        serializer.save(user=self.request.user)
+
+
+class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API para obtener (GET), actualizar (PUT) o eliminar (DELETE) una tarea específica
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = TaskSerializer
+    lookup_field = 'id'
+    
+    def get_queryset(self):
+        """Solo tareas del usuario autenticado"""
+        return Task.objects.filter(user=self.request.user)
+    
+    def get_serializer_class(self):
+        """Usar diferente serializer para actualizar vs obtener"""
+        if self.request.method in ['PUT', 'PATCH']:
+            return TaskCreateUpdateSerializer
+        return TaskSerializer
+
             
 
 
