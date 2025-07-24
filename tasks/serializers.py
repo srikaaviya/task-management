@@ -6,7 +6,7 @@ class TaskSerializer(serializers.ModelSerializer):
     Serializer for Task Model
     Convierte entre instancias de Task y JSON
     """
-    is_overdue = serializers.ReadOnlyField()
+    is_overdue = serializers.SerializerMethodField()
 
     user = serializers.StringRelatedField(read_only=True)
 
@@ -24,6 +24,8 @@ class TaskSerializer(serializers.ModelSerializer):
             'is_overdue'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+    def get_is_overdue(self, obj):
+        return obj.due_date and obj.due_date < date.today()
 
 class TaskCreateUpdateSerializer(serializers.ModelSerializer):
     """
