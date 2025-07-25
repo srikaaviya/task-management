@@ -9,6 +9,7 @@ error handling and user feedback through Django messages framework.
 from rest_framework.permissions import IsAuthenticated
 from .serializers import TaskSerializer, TaskCreateUpdateSerializer
 from rest_framework import generics
+from rest_framework.permissions import AllowAny
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
