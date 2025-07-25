@@ -20,7 +20,7 @@ class Task(models.Model):
     due_date = models.DateTimeField(null=True, blank=True, verbose_name='Due Date')
     priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.LOW)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank= True, null=True)
     
     def __str__(self):
         return f"{self.title} by: {self.user.username}"
