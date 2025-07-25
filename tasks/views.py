@@ -433,7 +433,8 @@ class TaskListAPIView(generics.ListCreateAPIView):
     """
     API para listar tareas (GET) y crear nuevas tareas (POST)
     """
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = TaskSerializer
 
     def get_queryset(self):
@@ -455,7 +456,8 @@ class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
     API para obtener (GET), actualizar (PUT) o eliminar (DELETE) una tarea específica
     """
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = TaskSerializer
     lookup_field = 'id'
     
