@@ -450,7 +450,8 @@ class TaskListAPIView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         """Asignar usuario al crear tarea"""
-        serializer.save(user=self.request.user)
+        # serializer.save(user=self.request.user)
+        serializer.save(user=None)
 
 
 class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
