@@ -9,7 +9,6 @@ error handling and user feedback through Django messages framework.
 from rest_framework.permissions import IsAuthenticated
 from .serializers import TaskSerializer, TaskCreateUpdateSerializer
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -434,8 +433,8 @@ class TaskListAPIView(generics.ListCreateAPIView):
     """
     API para listar tareas (GET) y crear nuevas tareas (POST)
     """
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
     serializer_class = TaskSerializer
 
     def get_queryset(self):
@@ -450,16 +449,16 @@ class TaskListAPIView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         """Asignar usuario al crear tarea"""
-        # serializer.save(user=self.request.user)
-        serializer.save(user=None)
+        serializer.save(user=self.request.user)
+        # serializer.save(user=None)
 
 
 class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
     API para obtener (GET), actualizar (PUT) o eliminar (DELETE) una tarea específica
     """
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
     serializer_class = TaskSerializer
     lookup_field = 'id'
     
