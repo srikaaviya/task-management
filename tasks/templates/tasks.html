@@ -63,6 +63,9 @@
                             <div class="task-meta">
                                 <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
                                 <span class="task-date">{{ task.created_at|date:"M d, Y" }}</span>
+                                {% if task.is_overdue %}
+                                    <span class="badge-danger">Overdue</span>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="task-card-footer">
